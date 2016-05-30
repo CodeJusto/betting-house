@@ -1,7 +1,8 @@
 
 var currentCash = startingCash = 100;
 var winnings = 0
-var count = 1
+var betCount = 0
+var winCount = 0
 
 function randomTen() {
   return Math.ceil((Math.random() * 10))
@@ -11,7 +12,9 @@ function gameOverCheck() {
   $('#result').text('YOU LOSE');
   $('#log').empty()
   $('#answer').text('Play again?');
-  $('#retryButton').show();
+  $('#retryButton').closest('form').show();
+  $('#submitButton').prop('disabled', 'true')
+
 }
 
 function cashUpdater() {
@@ -24,34 +27,49 @@ function cashUpdater() {
 }
 
 function gameReset(e) {
+  noPageRefresh(e);
+  currentCash = startingCash = 100;
+  winCount = betCount = 0;
+  $('#cash').text(startingCash);
+  $('.text').empty();
+  $('.input').val('');
+  $('#submitButton').removeProp('disabled');
+  $('#retryButton').closest('form').hide();
+  $('#wins').text(winCount)
+  $('.title').find('h2').find('span').text(betCount);
+  $('#winrate').text(0);
+}
+
+function noPageRefresh(e) {
   e.preventDefault();
   e.stopPropagation();
-  currentCash = startingCash = 100;
-  $('#cash').text(startingCash);
-  $('#answer').empty();
-  $('#log').empty();
-  $('#betAmount').val("");
-  $('#guessAmount').val("");
-  $('#result').text("");
-  $('.title').find('h2').find('span').text(++count);
-  $('#retryButton').hide();
+}
+
+
+function rangeChecker(currentGuess, answer) {
+  currentGuess === answer++ || currentGuess == answer--
 }
 
 $(document).ready(function () {
 
-  $('#retryButton').hide();
+  $('#retryButton').closest('form').hide();
 
   $('form').on('submit', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    noPageRefresh(e);
     var currentBet = +$(this).find('#betAmount').val();
     var currentGuess = +$(this).find('#guessAmount').val();
+    if (currentGuess < 1 || currentGuess > 10) {
+      $('#answer').text('You have to guess between 1 and 10!')
+      return
+    }
     var answer = randomTen();
-    console.log(randomTen());
+    //console.log(randomTen());
     if (currentGuess === answer) {
       $('#answer').text('You guessed correctly! The winning number was ' + answer)
-      winnings = currentBet
-    } else if (currentGuess === answer++ || currentGuess == answer--) {
+      winnings = currentBet;
+      winCount++;
+      $('#wins').text(winCount);
+    } else if (rangeChecker(currentGuess, answer)) {
       $('#answer').text('You were close! The winning number was ' + answer + '. Try again!');
       winnings = 0;
     } else {
@@ -59,17 +77,18 @@ $(document).ready(function () {
       winnings = -currentBet;
     }
 
-    if (currentBet > 0 && currentBet <= currentCash) {
+    if (currentBet > 0 && (currentBet <= currentCash)) {
       cashUpdater();
+      betCount++
     } else {
-      $('#answer').empty();
-      $('#log').text("You either bet a negative number or you bet more than you have.");
+      $('#answer').text("You either bet a negative number or you bet more than you have.");
     }
+
+    $('#winrate').text((winCount/betCount)* 100);
+    $('.title').find('h2').find('span').text(betCount);
   });
 
-  $('#retryButton').closest('.form').on('submit', function(e) {
+  $('#retryButton').closest('form').on('submit', function(e) {
     gameReset(e);
   });
-
-
 });
