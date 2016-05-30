@@ -1,0 +1,29 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="application.js"></script>
+<link rel="stylesheet" type "text/css" href="stylesheet.css"></script>
+
+<div class="background">
+  <div class="title">
+    <h1>Welcome to my betting house</h1>
+    <h2>Game number <span>1</span></h2>
+    <h4>Your current cash: $<span id="cash">100</span></h2>
+  </div>
+
+<form class="form">
+  <p>Bet amount</p>
+  <input id="betAmount" type="text" name="bet">
+  <p>Guess a number between 1 and 10</p>
+  <input id="guessAmount" type="text" name="guess"><br>
+  <input id="submitButton" type="submit" value="Submit">
+  
+</form>
+
+<div id="answer"></div>
+<form class="form">
+  <input id="retryButton" type="submit" value ="Try again">
+</form>
+<div id="log"></div>
+<h1 id="result"></h1>
+
+
+</div>
